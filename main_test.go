@@ -13,9 +13,9 @@ import (
 
 func TestNumbersProcessor(t *testing.T) {
 	expected, _ := json.Marshal(&NumbersResp{
-		Numbers: []int{1, 2, 3, 5, 8, 12},
+		Numbers: []int{1, 3, 5, 8, 12},
 	})
-	numbers := []int{12, 3, 5, 1, 8, 2}
+	numbers := []int{12, 3, 5, 1, 8}
 	out := make(chan []byte)
 	in := make(chan []int)
 
