@@ -13,16 +13,20 @@ import (
 
 func TestNumbersProcessor(t *testing.T) {
 	expected, _ := json.Marshal(&NumbersResp{
-		Numbers: []int{1, 3, 5, 8, 12},
+		Numbers: []int{1, 3, 5, 7, 8, 10, 12, 16},
 	})
-	numbers := []int{12, 3, 5, 1, 8}
+	numbers1 := []int{1, 3, 5, 8, 12}
+	numbers2 := []int{1, 3, 7, 8, 10, 16}
 	out := make(chan []byte)
-	in := make(chan []int)
+	in := make(chan []int, 2)
 
-	go NumbersProcessor(context.Background(), in, out)
-	in <- numbers
+	go NumbersProcessor(context.Background(), 2, in, out)
+	in <- numbers1
+	in <- numbers2
+	close(in)
 
 	obtained := <-out
+	obtained = <-out
 	if bytes.Compare(expected, obtained) != 0 {
 		t.Errorf("Expected: %s \n Obtained: %s", string(expected), string(obtained))
 	}
@@ -159,7 +163,7 @@ func TestNumbersHandlerTimeout(t *testing.T) {
 	}
 
 	if executionTime > 508 {
-		t.Errorf("handler's execution time is %d ms but should be less than 508 ms (8 ms for writing response)", executionTime)
+		t.Errorf("handler's execution time is %d ms but should be less than 500 ms", executionTime)
 	}
 
 	server.Close()
